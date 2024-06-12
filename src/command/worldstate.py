@@ -8,16 +8,25 @@ class WorldState(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name = 'Darvo Deals', help = 'Displays the current deal that Darvo is hosting.')
+    @commands.command(name = 'darvo_deal', help = ':Displays the current deal that Darvo is hosting.')
     async def darvo_deal(self, ctx):
         url = base_url + '/dailyDeals'
         deal = get(url).json()
 
-        item = deal['item']
-        price = deal['originalPrice']
-        sale = deal['salePrice']
+        if isinstance(deal, list) and len(deal) > 0:
+            deal_dict = deal[0]
 
-        response = "Today Darvo is selling " + item + " for " + sale + ", original price: " + price
+            if 'item' in deal_dict and 'originalPrice' in deal_dict and 'salePrice' in deal_dict:
+                item = deal_dict['item']
+                price = deal_dict['originalPrice']
+                sale = deal_dict['salePrice']
+
+                response =f"Today Darvo is selling {item} for {sale}, original price: {price}."
+            else:
+                response = "Sorry operator, I am having trouble accessing this information."
+        else:
+            response = "Darvo is not currently available."
+
         await ctx.send(response)
 
 async def setup(bot):
