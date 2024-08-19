@@ -47,6 +47,39 @@ class WorldState(commands.Cog):
         
         await ctx.send(response)
 
+    @commands.command(name = 'fortuna', help = 'Displays the current state in the Orb Vallis and the time remaining.')
+    async def fortuna_state(self, ctx):
+        url = base_url + '/vallisCycle'
+        fortuna = get(url).json()
+
+        if 'error' in fortuna:
+            response = "I am having trouble contacting Eudico operator."
+        else:
+            state = fortuna['isWarm']
+            time_left = fortuna['timeLeft']
+
+            if state == True:
+                response = f"It is currently warm in the Orb Vallis for {time_left}."
+            else:
+                response = f"It is currently cold in the Orb Vallis for {time_left}."
+        
+        await ctx.send(response)
+
+    @commands.command(name = 'deimos', help = 'Displays the current state in the Cambion Drift and the time remaining.')
+    async def deimos_state(self, ctx):
+        url = base_url + '/cambionCycle'
+        deimos = get(url).json()
+
+        if 'error' in deimos:
+            response = "I am having trouble contacting Mother operator."
+        else:
+            state = deimos['state']
+            time_left = deimos['timeLeft']
+
+            response = f"It is currently {state} in the Cambion Drift for {time_left}"
+
+        await ctx.send(response)
+
 async def setup(bot):
     await bot.add_cog(WorldState(bot))
     return
